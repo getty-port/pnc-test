@@ -6,6 +6,7 @@ secret:
   create: false
   name: port-credentials  # existing OpenShift secret with Port + Jira creds
 
+# 👇 This block is NOT used by port-labs/port-ocean,
 port:
   # clientId & clientSecret are coming from the secret, so no need here
   baseUrl: "https://api.getport.io"
@@ -18,7 +19,7 @@ integration:
   identifier: "jira-server"
   type: "jira-server"        # this is what should become part of the image name
   eventListener:
-    type: "POLLING"
+    type: "POLLING"  ## ✅ fixed: nested eventListener, no dotted key
   cachingStorage:
     mode: "memory"
   processExecution:
@@ -26,6 +27,7 @@ integration:
   config:
     jiraServerHost: "https://jira-qa.pncint.net"
 
+# ✅ fixed: renamed extraEnv → extraEnvs to match chart convention
 extraEnvs:
   - name: OCEAN__CACHING_STORAGE_MODE
     value: "memory"
