@@ -1,0 +1,40 @@
+name: Deploy Jira Server Integration
+
+on:
+  workflow_dispatch:  # so you can click "Run workflow" manually
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v4
+
+      - name: Login to OpenShift
+        uses: redhat-actions/oc-login@v1
+        with:
+          openshift_server_url: ${{ secrets.OPENSHIFT_SERVER }}
+          openshift_token: ${{ secrets.OPENSHIFT_TOKEN }}
+          insecure_skip_tls_verify: true
+
+      - name: Ensure namespace exists
+        run: |
+          oc get ns port-ocean || oc create namespace port-ocean
+
+      - name: Install Helm
+        uses: azure/setup-helm@v4
+
+      - name: Add Port Helm repo
+        run: |
+          helm repo add --force-update port-labs https://port-labs.github.io/helm-charts
+          helm repo update
+
+      - name: Deploy Jira Server Ocean integration
+        run: |
+          helm upgrade --install jira-server port-labs/port-ocean \
+            --namespace port-ocean \
+            -f pnc.yaml \
+            --set port.clientId="${{ secrets.PORT_CLIENT_ID }}" \
+            --set port.clientSecret="${{ secrets.PORT_CLIENT_SECRET }}" \
+            --set integration.secrets.token="${{ secrets.JIRA_API_TOKEN }}"
