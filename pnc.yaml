@@ -1,34 +1,34 @@
-port-ocean-jira:
-  mnemonic: idk
-  environment: qa
-  namespace: port-ocean # customers env. idk-qa
+mnemonic: idk
+environment: qa
+namespace: port-ocean  # customer's env / project
 
-  secret:
-    create: false
-    name: port-credentials #customer set to ocean-jira-server-jira-server-secret
+secret:
+  create: false
+  name: port-credentials  # existing OpenShift secret with Port + Jira creds
 
-  port:
-    # clientId: foo
-    # clientSecret: port.clientSecret
-    baseUrl: "https://api.getport.io" # customer is using us which is okay
+port:
+  # clientId & clientSecret are coming from the secret, so no need here
+  baseUrl: "https://api.getport.io"
 
-  initializePortResources: true
-  sendRawDataExamples: true
-  scheduledResyncInterval: 360
+initializePortResources: true
+sendRawDataExamples: true
+scheduledResyncInterval: 360
 
-  integration:
-    identifier: "jira-server"
-    type: "jira-server"
-    eventListener.type: "POLLING"
-    cachingStorage:
-      mode: "memory"
-    processExecution:
-      mode: "single_process"
-    config:
-      jiraServerHost: "https://jira-qa.pncint.net"
+integration:
+  identifier: "jira-server"
+  type: "jira-server"        # this is what should become part of the image name
+  eventListener:
+    type: "POLLING"
+  cachingStorage:
+    mode: "memory"
+  processExecution:
+    mode: "single_process"
+  config:
+    jiraServerHost: "https://jira-qa.pncint.net"
 
-  extraEnv:
-    - name: OCEAN__CACHING_STORAGE_MODE
-      value: "memory"
-    - name: OCEAN__PROCESS_EXECUTION_MODE
-      value: "single_process"
+extraEnvs:
+  - name: OCEAN__CACHING_STORAGE_MODE
+    value: "memory"
+  - name: OCEAN__PROCESS_EXECUTION_MODE
+    value: "single_process"
+
